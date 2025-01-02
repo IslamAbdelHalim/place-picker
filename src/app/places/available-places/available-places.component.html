@@ -1,0 +1,14 @@
+<ngx-spinner bdColor = "rgba(0, 0, 0, 0.8)" size = "medium" color = "#fff" type = "ball-clip-rotate" [fullScreen] = "true"><p style="color: white" > Loading... </p></ngx-spinner>
+
+<app-places-container title="Available Places">
+
+  @if(error()) {
+    <p class="fallback-text"> {{ error() }} </p>
+  }
+
+  @if (places()) {
+  <app-places [places]="places()!" (selectPlace)="onSelectPlace($event)"/>
+  } @else if (places()?.length === 0) {
+  <p class="fallback-text">Unfortunately, no places could be found.</p>
+  }
+</app-places-container>
