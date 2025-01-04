@@ -24,13 +24,32 @@ export class PlacesService {
   }
 
   addPlaceToUserPlaces(place: Place) {
-    this.userPlaces.update((prePlaces) => [...prePlaces, place])
+    // this.userPlaces.update((prePlaces) => [...prePlaces, place])
     return this.httpClient.put<{userPlace: Place[]}>('http://localhost:3000/user-places', {
       placeId: place.id
-    });
+    }).pipe(
+      catchError((err) => {
+        return throwError(() => new Error('Failed to store selected place'))
+      }),
+      tap({
+        complete: () => {
+          if (!this.userPlaces().some((p) => p.id === place.id)) {
+            this.userPlaces.update((prePlaces) => [...prePlaces, place])
+          }
+        }
+      })
+    );
   }
 
-  removeUserPlace(place: Place) {}
+  removeUserPlace(placeId: string) {
+    return this.httpClient.delete(`http://localhost:3000/user-places/${placeId}`).pipe(
+      tap({
+        complete: () => {
+          this.userPlaces.set(this.userPlaces().filter((p) => p.id !== placeId))
+        }
+      })
+    );
+  }
 
   private fetchPlaces(url: string, errMessage: string) {
     return this.httpClient.get<{places: Place[]}>(url)

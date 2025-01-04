@@ -33,4 +33,8 @@ export class UserPlacesComponent implements OnInit{
       fetchData.unsubscribe();
     })
   }
+
+  onSelectPlace(place: Place) {
+    this.placesService.removeUserPlace(place.id).subscribe();
+  }
 }
